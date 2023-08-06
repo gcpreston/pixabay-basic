@@ -1,7 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
+
 import './index.css';
-import App from './App';
+import SearchPage from './containers/SearchPage';
+import ResultPage from './containers/ResultPage';
 import reportWebVitals from './reportWebVitals';
 
 import '@fontsource/roboto/300.css';
@@ -10,9 +13,21 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const router = createBrowserRouter([
+  {
+    path: '/search',
+    element: <SearchPage />
+  },
+  {
+    path: 'result/:id',
+    element: <ResultPage />
+  }
+]);
+
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

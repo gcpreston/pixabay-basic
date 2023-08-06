@@ -1,46 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Button, TextField, Stack, ImageList, ImageListItem } from '@mui/material';
-import { Link, useSearchParams } from 'react-router-dom';
+import React from 'react';
+import { Await, defer, useLoaderData, useSearchParams } from 'react-router-dom';
+import { CircularProgress, Button, TextField, Stack } from '@mui/material';
 
 import { fetchSearchResults } from '../api/pixabay';
+import SearchResults from '../components/SearchResults';
+
+export const loader = ({ request }) => {
+  const url = new URL(request.url);
+  const queryParams = new URLSearchParams(url.search);
+  const searchQuery = queryParams.get('q');
+
+  return defer({
+    searchResult: searchQuery ? fetchSearchResults(searchQuery).then(response => response.json()) : null
+  });
+}
 
 const SearchPage = () => {
-  const [searchResult, setSearchResult] = useState(null);
+  const { searchResult } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('q');
-
-  useEffect(() => {
-    if (searchQuery) {
-      const doSearch = async () => {
-        const response = await fetchSearchResults(searchQuery);
-        const result = await response.json();
-        setSearchResult(result);
-      };
-
-      doSearch();
-    } else {
-      setSearchResult(null);
-    }
-  }, [searchQuery]);
-
-  let resultsBlock;
-
-  if (searchResult) {
-    resultsBlock = (
-      <ImageList cols={1}>
-        {searchResult.hits.map((hit, i) => (
-          <ImageListItem key={hit.id} sx={{ width: hit.previewWidth, height: hit.previewHeight }}>
-            <Link to={`/result/${hit.id}`}>
-              <img
-                src={hit.previewURL}
-                alt={hit.type}
-              />
-            </Link>
-          </ImageListItem>
-        ))}
-      </ImageList>
-    );
-  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -57,7 +35,15 @@ const SearchPage = () => {
         </Stack>
       </form>
 
-      {resultsBlock}
+      { searchQuery &&
+        <React.Suspense fallback={<CircularProgress />}>
+          <Await
+            resolve={searchResult}
+            errorElement={<div>There was an error loading the search results.</div>}
+            children={(resolvedSearchResults) => <SearchResults hits={resolvedSearchResults.hits} />}
+          />
+        </React.Suspense>
+      }
     </>
   );
 };

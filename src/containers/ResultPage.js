@@ -24,7 +24,6 @@ const ResultPage = () => {
           errorElement={<div>There was an error loading the image.</div>}
           children={(resolvedImageResult) => {
             const hit = resolvedImageResult.hits[0];
-            console.log('hit', hit);
 
             return (
               <>

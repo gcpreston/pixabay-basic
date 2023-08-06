@@ -4,7 +4,7 @@ import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 
 import './index.css';
 import Layout from './containers/Layout';
-import SearchPage from './containers/SearchPage';
+import SearchPage, { loader as searchLoader} from './containers/SearchPage';
 import ResultPage, { loader as resultLoader } from './containers/ResultPage';
 import reportWebVitals from './reportWebVitals';
 
@@ -25,7 +25,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/search',
-        element: <SearchPage />
+        element: <SearchPage />,
+        loader: searchLoader
       },
       {
         path: 'result/:imageId',

@@ -1,36 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, TextField, Container, Stack, ImageList, ImageListItem } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 
-const SearchPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const userSearched = searchParams.get('q');
-  let results;
+import { fetchSearchResults } from '../api/search';
 
-  if (userSearched) {
-    results = (
-      <ImageList>
-        <ImageListItem>
-          <img src="https://cdn.britannica.com/39/7139-050-A88818BB/Himalayan-chocolate-point.jpg" alt="cat 1" />
-          <img src="https://www.thesprucepets.com/thmb/uQnGtOt9VQiML2oG2YzAmPErrHo=/5441x0/filters:no_upscale():strip_icc()/all-about-tabby-cats-552489-hero-a23a9118af8c477b914a0a1570d4f787.jpg" alt="cat 2" />
-        </ImageListItem>
+const SearchPage = () => {
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q');
+
+  useEffect(() => {
+    if (searchQuery) {
+      const doSearch = async () => {
+        const response = await fetchSearchResults(searchQuery);
+        const result = await response.json();
+        setSearchResult(result);
+      };
+
+      doSearch();
+    } else {
+      setSearchResult(null);
+    }
+  }, [searchQuery]);
+
+  let resultsBlock;
+
+  if (searchResult) {
+    resultsBlock = (
+      <ImageList cols={1}>
+        {searchResult.hits.map((hit, i) => (
+          <ImageListItem key={hit.id} sx={{ width: hit.previewWidth, height: hit.previewHeight }}>
+            <img
+              src={hit.previewURL}
+              alt={searchQuery}
+            />
+          </ImageListItem>
+        ))}
       </ImageList>
     );
   }
 
-  const search = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const query = document.getElementById('search-field')?.value;
     setSearchParams({ q: query });
   };
 
   return (
     <Container>
-      <Stack direction="row" spacing={2}>
-        <TextField id="search-field" label="Search" />
-        <Button variant="contained" onClick={search}>Search</Button>
-      </Stack>
+      <form onSubmit={handleSubmit}>
+        <Stack direction="row" spacing={2}>
+          <TextField id="search-field" label="Search" defaultValue={searchQuery} />
+          <Button variant="contained" type="submit">Search</Button>
+        </Stack>
+      </form>
 
-      {results}
+      {resultsBlock}
     </Container>
   );
 };

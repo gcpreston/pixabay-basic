@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextField, Container, Stack, ImageList, ImageListItem } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import { Button, TextField, Stack, ImageList, ImageListItem } from '@mui/material';
+import { Link, useSearchParams } from 'react-router-dom';
 
-import { fetchSearchResults } from '../api/search';
+import { fetchSearchResults } from '../api/pixabay';
 
 const SearchPage = () => {
   const [searchResult, setSearchResult] = useState(null);
@@ -30,10 +30,12 @@ const SearchPage = () => {
       <ImageList cols={1}>
         {searchResult.hits.map((hit, i) => (
           <ImageListItem key={hit.id} sx={{ width: hit.previewWidth, height: hit.previewHeight }}>
-            <img
-              src={hit.previewURL}
-              alt={searchQuery}
-            />
+            <Link to={`/result/${hit.id}`}>
+              <img
+                src={hit.previewURL}
+                alt={hit.type}
+              />
+            </Link>
           </ImageListItem>
         ))}
       </ImageList>
@@ -47,7 +49,7 @@ const SearchPage = () => {
   };
 
   return (
-    <Container>
+    <>
       <form onSubmit={handleSubmit}>
         <Stack direction="row" spacing={2}>
           <TextField id="search-field" label="Search" defaultValue={searchQuery} />
@@ -56,7 +58,7 @@ const SearchPage = () => {
       </form>
 
       {resultsBlock}
-    </Container>
+    </>
   );
 };
 

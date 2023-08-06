@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
 
 import './index.css';
 import Layout from './containers/Layout';
 import SearchPage from './containers/SearchPage';
-import ResultPage from './containers/ResultPage';
+import ResultPage, { loader as resultLoader } from './containers/ResultPage';
 import reportWebVitals from './reportWebVitals';
 
 import '@fontsource/roboto/300.css';
@@ -17,6 +17,10 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const router = createBrowserRouter([
   {
+    path: '/',
+    loader: () => redirect('/search')
+  },
+  {
     element: <Layout />,
     children: [
       {
@@ -24,8 +28,9 @@ const router = createBrowserRouter([
         element: <SearchPage />
       },
       {
-        path: 'result/:id',
-        element: <ResultPage />
+        path: 'result/:imageId',
+        element: <ResultPage />,
+        loader: resultLoader
       }
     ]
   }

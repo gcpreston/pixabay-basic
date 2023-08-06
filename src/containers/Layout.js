@@ -1,10 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 const Layout = () => (
   <Box sx={{ marginY: '2rem' }}>
-    <Outlet />
+    <Container>
+      <Outlet />
+    </Container>
   </Box>
 );
 

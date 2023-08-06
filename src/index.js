@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import './index.css';
+import Layout from './containers/Layout';
 import SearchPage from './containers/SearchPage';
 import ResultPage from './containers/ResultPage';
 import reportWebVitals from './reportWebVitals';
@@ -16,12 +17,17 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 const router = createBrowserRouter([
   {
-    path: '/search',
-    element: <SearchPage />
-  },
-  {
-    path: 'result/:id',
-    element: <ResultPage />
+    element: <Layout />,
+    children: [
+      {
+        path: '/search',
+        element: <SearchPage />
+      },
+      {
+        path: 'result/:id',
+        element: <ResultPage />
+      }
+    ]
   }
 ]);
 
